@@ -7,7 +7,6 @@ sap.ui.define([
   
     return Controller.extend("sap.assistant.assistant.controller.Main", {
       onInit: function () {
-        // Create JSONModel for chat messages and set to view with named model "chat"
         const oMessageModel = new sap.ui.model.json.JSONModel({ messages: [] });
         this.getView().setModel(oMessageModel, "chat");
       },
@@ -20,11 +19,9 @@ sap.ui.define([
         const bVisible = oPanel.getVisible();
         oPanel.setVisible(!bVisible);
       
-        // Optionally hide/show the open button when panel is open
         oButton.setVisible(bVisible);
       
         if (!bVisible) {
-          // Focus input when chatbot opens
           setTimeout(() => {
             const oInput = oView.byId("chatInput");
             if (oInput) {
@@ -45,10 +42,8 @@ sap.ui.define([
           return;
         }
   
-        // Add user message to chat messages model
         this._addMessage("user", question);
   
-        // Clear input after sending
         oInput.setValue("");
   
         const callAction = async (actionName) => {
@@ -127,7 +122,6 @@ sap.ui.define([
         };
   
         try {
-          // Call askBot first
           let result = await callAction("askBot");
           console.log("askBot response:", result);
   
@@ -140,10 +134,8 @@ sap.ui.define([
             formatted = formatResponse(result);
           }
   
-          // Add bot message to chat model
           this._addMessage("bot", formatted || "No results found.");
   
-          // Scroll to bottom
           this.scrollToBottom();
   
         } catch (err) {

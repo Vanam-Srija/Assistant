@@ -7,7 +7,7 @@
       "target": "/odata/v4/salesorder/$1",
       "destination": "newassistant-srv-api",
       "authenticationType": "xsuaa",
-      "csrfProtection": false
+      "csrfProtection": true
     },
     {
       "source": "^/resources/(.*)$",

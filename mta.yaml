@@ -9,6 +9,7 @@ modules:
   requires:
   - name: newassistant-destination
   - name: newassistant-auth
+  - name: newassistant-connectivity
   provides:
   - name: srv-api
     properties:

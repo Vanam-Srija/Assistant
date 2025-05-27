@@ -37,6 +37,8 @@
     "requires": {
       "GWSAMPLE_BASIC": {
         "kind": "odata-v2",
+        "csrf": true,
+        "csrfInBatch": true,
         "model": "srv/external/GWSAMPLE_BASIC",
         "credentials": {
           "destination": "280407_ES5",

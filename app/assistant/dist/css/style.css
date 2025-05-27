@@ -1,1 +1,70 @@
 /* Enter your custom styles here */
+
+.leftPane {
+    background-color: #f9f9f9;
+    border-right: 1px solid #ddd;
+  }
+  
+  .rightPane {
+    background-color: #ffffff;
+  }
+  /* 
+  .botBubble {
+    background-color: #e0f7fa;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    max-width: 80%;
+  } */
+  
+  /* .userBubble {
+    background-color: #c8e6c9;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    max-width: 80%;
+  } */
+  
+  
+  .chatInputArea {
+    font-size: 1rem;
+  }
+  
+  .botBubble {
+    background-color: #e6f0ff;
+    padding: 0.5rem 0.75rem;
+    border-radius: 10px;
+    margin: 0.2rem;
+    max-width: 80%;
+    color: #003366;
+  }
+  
+  .userBubble {
+    background-color: #dcf8c6;
+    padding: 0.5rem 0.75rem;
+    border-radius: 10px;
+    margin: 0.2rem;
+    max-width: 80%;
+    color: #1b3e1b;
+  }
+  
+  
+  /* In your styles.css or add in index.html <style> */
+  /* .botBubble {
+    background-color: #f1f0f0;
+    padding: 0.7rem;
+    border-radius: 8px;
+    max-width: 70%;
+  }
+  
+  .userBubble {
+    background-color: #daf1da;
+    padding: 0.7rem;
+    border-radius: 8px;
+    max-width: 70%;
+  }
+  
+  .chatMessageWrapper {
+    margin-bottom: 1rem;
+  } */
+  
+  
+  

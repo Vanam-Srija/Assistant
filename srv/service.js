@@ -73,7 +73,6 @@ async function fetchSalesOrdersOnce() {
  
     return [...new Set(matchedFields)];
   }
-  // Normalize strings for matching (e.g. camelCase -> "camel case", lower case)
   function normalizeString(str) {
     if (!str) return "";
     return str
@@ -82,7 +81,6 @@ async function fetchSalesOrdersOnce() {
       .toLowerCase()
       .trim();
   }
-   // Parse your /Date(1577833200000)/ format into JS Date object
    function parseJsonDate(jsonDateStr) {
     if (!jsonDateStr) return null;
     const match = jsonDateStr.match(/\/Date\((\d+)\)\//);
@@ -92,7 +90,6 @@ async function fetchSalesOrdersOnce() {
     return null;
   }
 
-  // Format values for output (dates, amounts, status + descriptions)
   function formatValue(field, value, fullRecord) {
     if (value == null) return "N/A";
  
@@ -117,32 +114,17 @@ async function fetchSalesOrdersOnce() {
     return value;
   }
  
-   // Extract relevant fields the user asked for based on question text and sample record
-   function extractRequestedFieldsFromQuestion2(question, sampleRecord) {
-    if (!sampleRecord) return [];
  
-    const normalizedFields = Object.keys(sampleRecord).map(key => ({
-      original: key,
-      normalized: normalizeFieldName(key)
-    }));
- 
-    const lowerQuestion = question.toLowerCase();
-    const matchedFields = [];
- 
-    for (const field of normalizedFields) {
-      if (lowerQuestion.includes(field.normalized)) {
-        matchedFields.push(field.original);
-      }
-    }
- 
-    return [...new Set(matchedFields)];
-  }
- 
-  // Extract Sales Order ID from question (assumes 10-digit starting with 0)
+  // Extract Sales Order ID from question
   function extractSalesOrderId(question) {
     const match = question.match(/\b0\d{9}\b/);
     return match ? match[0] : null;
   }
+
+/*   this.on("askBot", async (req) => {
+    return "AskBot working without embeddings.";
+  }); */
+  
  
   this.on('askBot', async (req) => {
     const input = req.data?.input?.trim?.();
@@ -158,17 +140,17 @@ async function fetchSalesOrdersOnce() {
     const lowerInput = input.toLowerCase();
     const sampleOrder = salesOrders[0];
  
-    // Normalize field names for flexible matching
+    // Normalize field names for matching
     const normalizedFieldMap = Object.keys(sampleOrder).reduce((acc, key) => {
-      const normalized = normalizeFieldName(key); // E.g., "customer id"
+      const normalized = normalizeFieldName(key);
       acc[normalized] = key;
       return acc;
     }, {});
  
-    // 1. Extract requested fields to show
+    //  Extracted requested fields to show
     const requestedFields = extractRequestedFieldsFromQuestion(input, sampleOrder);
  
-    // 2. Enhanced logic: extract multiple SalesOrderIDs from "sales order" phrases
+    // for multiple SalesOrderIDs from sales order
     let salesOrderIdMatches = [];
  
     const salesOrderPhraseMatch = input.match(/sales order\s+([0-9,\sand]+)/i);
@@ -208,11 +190,11 @@ async function fetchSalesOrdersOnce() {
       });
     }
 
-   // 3. Code for Top Customers and Repeated Customers
+   // for Top Customers and Repeated Customers
 
    const inputText = input.toLowerCase();
 
-   // === Handle Repeated Customers ===
+   // for  Repeated Customers
    if (
      inputText.includes("repeat") ||
      inputText.includes("repeated orders") ||
@@ -241,7 +223,6 @@ async function fetchSalesOrdersOnce() {
          orderCount: count
        }));
    
-     // ✅ Early return
      return req.reply([
        {
          success: true,
@@ -251,7 +232,7 @@ async function fetchSalesOrdersOnce() {
      ]);
    }
    
-   // === Handle Top Customers ===
+   // for Top Customers
    if (
      inputText.includes("top customer") ||
      inputText.includes("top clients") ||
@@ -283,7 +264,6 @@ async function fetchSalesOrdersOnce() {
          totalNetValue: data.totalValue.toFixed(2)
        }));
    
-     // ✅ Early return
      return req.reply([
        {
          success: true,
@@ -293,7 +273,7 @@ async function fetchSalesOrdersOnce() {
      ]);
    }
    
-   // === Generic Field + Value Detection ===
+   // Returns the field values as per field which user gives as an input
    let detectedField = null;
    let detectedValue = null;
    
@@ -357,25 +337,20 @@ async function fetchSalesOrdersOnce() {
    
    //Recent SalesOrder Based on Date
 
-   // --- Helper to parse ISO date strings (like "2020-01-14T23:00:00.0000000") ---
    const parseODataDate = (odataDate) => new Date(odataDate);
-   // --- Date based queries ---
    const isDateQuery = inputText.includes("recent") || inputText.includes("latest") || inputText.includes("between");
 
    if (isDateQuery) {
-     // Map sales orders with parsed CreatedAt dates
      const orderDatePairs = salesOrders.map(order => ({
        SalesOrderID: order.SalesOrderID,
        CreatedAt: parseODataDate(order.CreatedAt)
      })).filter(o => o.CreatedAt instanceof Date && !isNaN(o.CreatedAt));
 
-     // --- Latest/recent orders logic ---
+     // Latest/recent orders logic
      if (inputText.includes("recent") || inputText.includes("latest")) {
-       // Extract requested number of orders, default to 5
        const numberMatch = inputText.match(/(\d+)/);
        const count = numberMatch ? parseInt(numberMatch[1], 10) : 5;
 
-       // Sort descending by CreatedAt and slice top 'count'
        const sorted = orderDatePairs.sort((a, b) => b.CreatedAt - a.CreatedAt).slice(0, count);
 
        return req.reply([{
@@ -388,7 +363,7 @@ async function fetchSalesOrdersOnce() {
        }]);
      }
 
-     // --- Orders between dates logic ---
+     //Orders between dates
      if (inputText.includes("between")) {
        const datePattern = /\b(\d{4}-\d{2}-\d{2})\b/g;
        const matches = [...inputText.matchAll(datePattern)];
@@ -420,7 +395,7 @@ async function fetchSalesOrdersOnce() {
 
    
  
-    // ✅ 3. Fallback to vector similarity
+    // Vector similarity
     const vectorResults = await vectorStore.similaritySearch(input, 10);
     const fallbackResults = vectorResults.map(match => {
       return requestedFields.length
@@ -456,7 +431,6 @@ async function fetchSalesOrdersOnce() {
     }, {});
     const requestedFields = extractRequestedFieldsFromQuestion(input, sampleOrder);
  
-    // Try to detect aggregate queries
     const aggregateMap = {
       sum: 'sum',
       total: 'sum',
@@ -566,7 +540,7 @@ async function fetchSalesOrdersOnce() {
     }
   }
 
-   // ➕ Handle distinct count: e.g., unique customers
+   // code for unique customers
    if (lowerInput.includes('unique') || lowerInput.includes('distinct')) {
     if (lowerInput.includes('customer')) {
       const uniqueCustomerNames = [
@@ -582,7 +556,7 @@ async function fetchSalesOrdersOnce() {
     }
   }
 
-  // 🔍 Find Sales Order IDs
+  // Find Sales Order IDs
   let salesOrderIdMatches = [];
  
   const salesOrderPhraseMatch = input.match(/sales order\s+([0-9,\sand]+)/i);
@@ -601,12 +575,10 @@ async function fetchSalesOrdersOnce() {
     for (const id of salesOrderIdMatches) {
       const order = salesOrders.find(o => o.SalesOrderID === id);
       if (order) {
-        // pick requested fields only, or full order if none requested
         const filteredResult = requestedFields.length
           ? Object.fromEntries(requestedFields.map(f => [f, order[f]]))
           : order;
  
-        // add SalesOrderID in each result explicitly for clarity
         filteredResult.SalesOrderID = id;
  
         results.push(filteredResult);
@@ -620,7 +592,6 @@ async function fetchSalesOrdersOnce() {
       });
     }
  
-    // Return count and array of results for all matched sales orders
     return req.reply({
       count: results.length,
       results
@@ -628,7 +599,6 @@ async function fetchSalesOrdersOnce() {
   }
  
  
-  // 🔍 Field = value detection
   let detectedField = null;
   let detectedValue = null;
 
@@ -659,13 +629,9 @@ async function fetchSalesOrdersOnce() {
       });
     }
  
-    // Only return filtered fields, or SalesOrderID by default
-   //  Always include SalesOrderID, plus any requested fields
     const response = filtered.map(order => {
       const entry = { SalesOrderID: order.SalesOrderID };
-      // add any other fields the user explicitly asked for
       for (const f of requestedFields) {
-        // avoid overwriting SalesOrderID if they asked for it twice
         if (f !== 'SalesOrderID') {
           entry[f] = order[f];
         }
@@ -679,7 +645,7 @@ async function fetchSalesOrdersOnce() {
     });
   }
 
-  //  Fallback: Vector similarity
+  // Vector similarity
   const vectorResults = await vectorStore.similaritySearch(input, 10);
   const fallbackResults = vectorResults.map(match => {
     return requestedFields.length

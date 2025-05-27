@@ -15,12 +15,12 @@
   height="4rem"
   style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;" />
  
- 
+<!--  
       <Image
         src="https://www.webio.com/assets/components/layout/images/thought-box-images/blogs/design-chatbots.png"
         width="80%"
         height="auto"
-        class="sapUiMediumMargin" />
+        class="sapUiMediumMargin" /> -->
   <VBox
     id="chatbotPanel"
     visible="false"
@@ -67,7 +67,6 @@
         </HBox>
       </VBox>
  
-      <!-- User Message on Right -->
       <VBox visible="{= ${chat>role} === 'user' }" alignItems="End" width="100%">
         <HBox justifyContent="End" width="100%">
           <VBox class="userBubble" width="auto" maxWidth="75%">
@@ -88,7 +87,6 @@
  
       </ScrollContainer>
  
-      <!-- ChatGPT-style Input Box -->
       <HBox
         width="100%"
         alignItems="Center"

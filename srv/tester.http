@@ -1,0 +1,7 @@
+### Get all Order ID's Whose Delivery status is Delivered
+POST http://localhost:4004/odata/v4/salesorder/askBot
+Content-Type: application/json
+
+{
+  "input": "Tell me the repeated customers"
+}
